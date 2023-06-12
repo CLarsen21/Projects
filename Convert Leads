@@ -8,9 +8,7 @@ Public class ConvertLeads {
             Leadconvert.setLeadId(currentlead);                               
             Leadconvert.setConvertedStatus(CLeadStatus.MasterLabel);             
             MassLeadconvert.add(Leadconvert);    
-        }                  
-        if (!MassLeadconvert.isEmpty()) {            
-            List<Database.LeadConvertResult> lcr = Database.convertLead(MassLeadconvert);       
-        }    
+        }
+        List<Database.LeadConvertResult> lcr = Database.convertLead(MassLeadconvert);      
     } 
 }
