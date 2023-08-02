@@ -1,4 +1,4 @@
-public class OppCallout {
+public with sharing class OppCallout {
     @InvocableMethod
     public static void postOpportunities(List<id> OppIds) {
         List<Opportunity> OppsToSerialize = [SELECT Account.Name, Amount, CloseDate FROM Opportunity WHERE Id in :OppIds];

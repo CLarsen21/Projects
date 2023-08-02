@@ -1,4 +1,4 @@
-public class PokeCallout {
+public with sharing class PokeCallout {
     
     public class Pokeresp {
         public integer count;
