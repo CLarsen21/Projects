@@ -4,10 +4,6 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
   private Integer counter = 0;
   private List<ID> accIDs;
 
-  public PokeCalloutQueueable(List<ID> accIds) {
-    this.accIDs = accIds;
-  }
-
   public PokeCalloutQueueable(List<ID> accIds, Integer counter) {
     this.accIDs = accIds;
     this.counter = counter;
@@ -29,7 +25,8 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
     // 1. Pull the first account off the list of accounts to work with
     // GET THE ID OF THE ACCOUNT AND ALSO REMOVE IT FROM THE LIST SO WE DON'T REPEAT ACCOUNTS
     // ->
-
+    ID Accid = accIds[0];
+	accIds.remove(0);
     // 2. For this account, make a callout to the PokeAPI
     // 3. Parse the response and create a list of Pokemon__c records
     // 4. Associate those records with the current Account
@@ -42,26 +39,24 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
     HttpRequest request = new HttpRequest();
 
     // TODO: Change this out for a Named Credential
-    request.setEndpoint('https://pokeapi.co/api/v2/pokemon?limit=9&offset=721');
+    request.setEndpoint('callout:pokemon/pokemon?limit=9&offset=721');
     request.setMethod('GET');
     HttpResponse response = http.send(request);
     // If the request is successful, parse the JSON response.
-    if (response.getStatusCode() == 200) {
-      string pokerespstring = response.getBody().replace('url', 'url__c');
-      List<Pokemon__c> pokelist = new List<Pokemon__c>();
-      for (ID accid : accIDs) {
-        Pokeresp p = (Pokeresp) JSON.deserializeStrict(
-          pokerespstring,
-          Pokeresp.class
-        );
-        for (Pokemon__c pkmn : p.results) {
-          pkmn.Account__c = accid;
-        }
-        pokelist.addAll(p.results);
+      if (response.getStatusCode() == 200) {
+          string pokerespstring = response.getBody().replace('url', 'url__c');
+          List<Pokemon__c> pokelist = new List<Pokemon__c>();
+          Pokeresp p = (Pokeresp) JSON.deserializeStrict(
+              pokerespstring,
+              Pokeresp.class
+          );
+          for (Pokemon__c pkmn : p.results) {
+              pkmn.Account__c = accid;
+          }
+          pokelist.addAll(p.results);
+          insert pokelist;
       }
-      insert pokelist;
-    }
-
+	
     this.handleNextPage();
   }
 
