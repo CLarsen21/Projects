@@ -1,6 +1,6 @@
-public with sharing class ConvertLeads {
+Public class ConvertLeads {
     
-    public class ConvertLeadRequest {
+    Public class ConvertLeadRequest {
         @InvocableVariable
         public ID leadId;
         
@@ -8,16 +8,16 @@ public with sharing class ConvertLeads {
         public Boolean createOpportunity;
     }
     
-    @InvocableMethod   
-    public static void leadAssign(List<ConvertLeadRequest> convertLeadRequests) {         
-        LeadStatus cLeadStatus= [SELECT Id, MasterLabel FROM LeadStatus WHERE IsConverted=true Limit 1];    
+    @InvocableMethod(label='Convert Leads' description='converts the specified leads')   
+    public static void LeadAssign(List<ConvertLeadRequest> ConvertLeadRequests) {         
+        LeadStatus CLeadStatus= [SELECT Id, MasterLabel FROM LeadStatus WHERE IsConverted=true Limit 1];    
         List<Database.LeadConvert> lc = new List<Database.LeadConvert>();    
-        for(ConvertLeadRequest clr : convertLeadRequests) {                
-            Database.LeadConvert leadConvert = new Database.LeadConvert();    
-            leadConvert.setLeadId(clr.leadId);                               
-            leadConvert.setConvertedStatus(cLeadStatus.MasterLabel);
-            leadConvert.setDoNotCreateOpportunity(!clr.createOpportunity);
-            lc.add(leadConvert);    
+        for(ConvertLeadRequest clr : ConvertLeadRequests) {                
+            Database.LeadConvert Leadconvert = new Database.LeadConvert();    
+            Leadconvert.setLeadId(clr.leadId);                               
+            Leadconvert.setConvertedStatus(CLeadStatus.MasterLabel);
+            Leadconvert.setDoNotCreateOpportunity(!clr.createOpportunity);
+            lc.add(Leadconvert);    
         }
         List<Database.LeadConvertResult> lcr = Database.convertLead(lc);  
     } 

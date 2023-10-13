@@ -1,6 +1,6 @@
 public class PokeCallout {
 
-    @InvocableMethod
+    @InvocableMethod(label='Get Pokemon' description='Gets a list of Pokemon from the PokeAPI')
     public static void getPokemon(List<Id> accountIDs){
         system.enqueueJob(new PokeCalloutQueueable(accountIDs, 1));
     }
