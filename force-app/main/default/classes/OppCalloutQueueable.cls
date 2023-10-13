@@ -17,5 +17,10 @@ public class OppCalloutQueueable implements Queueable, Database.AllowsCallouts {
         // Set the body as a JSON object
         request.setBody(Opps);
         HttpResponse response = http.send(request);
+        if(response.getStatusCode() != 200) {
+            system.debug(response.getBody());
+            Response_Info__c info = new Response_Info__c(name =string.valueofgmt(system.today()), Response_Body__c = response.getBody());
+        	insert info;
+        }
     }
 }
