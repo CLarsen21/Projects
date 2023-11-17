@@ -60,15 +60,16 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
     this.handleNextPage();
   }
 
-  void handleNextPage() {
-    if (this.accIDs.isEmpty()) {
-      System.debug('>>> No more accounts to work with, we\'re done!');
-      return;
+    void handleNextPage() {
+        if (this.accIDs.isEmpty()) {
+            System.debug('>>> No more accounts to work with, we\'re done!');
+            return;
+        }
+        
+        Integer newCounter = this.counter + 1;
+        if (!Test.isRunningTest()) {
+            System.debug('>>> Enqueuing next job with remaining accounts');
+            System.enqueueJob(new PokeCalloutQueueable(this.accIDs, newCounter));
+        } 
     }
-
-    Integer newCounter = this.counter + 1;
-
-    System.debug('>>> Enqueuing next job with remaining accounts');
-    System.enqueueJob(new PokeCalloutQueueable(this.accIDs, newCounter));
-  }
 }
