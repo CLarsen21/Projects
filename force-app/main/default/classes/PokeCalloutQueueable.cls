@@ -26,7 +26,7 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
     // GET THE ID OF THE ACCOUNT AND ALSO REMOVE IT FROM THE LIST SO WE DON'T REPEAT ACCOUNTS
     // ->
     ID Accid = accIds[0];
-	accIds.remove(0);
+    accIds.remove(0);
     // 2. For this account, make a callout to the PokeAPI
     // 3. Parse the response and create a list of Pokemon__c records
     // 4. Associate those records with the current Account
@@ -43,33 +43,33 @@ public class PokeCalloutQueueable implements Queueable, Database.AllowsCallouts 
     request.setMethod('GET');
     HttpResponse response = http.send(request);
     // If the request is successful, parse the JSON response.
-      if (response.getStatusCode() == 200) {
-          string pokerespstring = response.getBody().replace('url', 'url__c');
-          List<Pokemon__c> pokelist = new List<Pokemon__c>();
-          Pokeresp p = (Pokeresp) JSON.deserializeStrict(
-              pokerespstring,
-              Pokeresp.class
-          );
-          for (Pokemon__c pkmn : p.results) {
-              pkmn.Account__c = accid;
-          }
-          pokelist.addAll(p.results);
-          insert pokelist;
+    if (response.getStatusCode() == 200) {
+      string pokerespstring = response.getBody().replace('url', 'url__c');
+      List<Pokemon__c> pokelist = new List<Pokemon__c>();
+      Pokeresp p = (Pokeresp) JSON.deserializeStrict(
+        pokerespstring,
+        Pokeresp.class
+      );
+      for (Pokemon__c pkmn : p.results) {
+        pkmn.Account__c = accid;
       }
-	
+      pokelist.addAll(p.results);
+      insert pokelist;
+    }
+
     this.handleNextPage();
   }
 
-    void handleNextPage() {
-        if (this.accIDs.isEmpty()) {
-            System.debug('>>> No more accounts to work with, we\'re done!');
-            return;
-        }
-        
-        Integer newCounter = this.counter + 1;
-        if (!Test.isRunningTest()) {
-            System.debug('>>> Enqueuing next job with remaining accounts');
-            System.enqueueJob(new PokeCalloutQueueable(this.accIDs, newCounter));
-        } 
+  void handleNextPage() {
+    if (this.accIDs.isEmpty()) {
+      System.debug('>>> No more accounts to work with, we\'re done!');
+      return;
     }
+
+    Integer newCounter = this.counter + 1;
+    if (!Test.isRunningTest()) {
+      System.debug('>>> Enqueuing next job with remaining accounts');
+      System.enqueueJob(new PokeCalloutQueueable(this.accIDs, newCounter));
+    }
+  }
 }
