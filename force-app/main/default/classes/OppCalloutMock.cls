@@ -1,10 +1,18 @@
 @isTest
 public class OppCalloutMock implements HttpCalloutMock {
-    public HttpResponse respond(HttpRequest request){
-        HttpResponse res = new HttpResponse();
-        res.setHeader('Content-Type', 'application/json');
-        res.setBody('');
-        res.setStatusCode(200);
-        return res;
-    }
+  private Integer statusCode = 200;
+
+  public OppCalloutMock() {
+  }
+
+  public OppCalloutMock(Integer statusCode) {
+    this.statusCode = statusCode;
+  }
+  public HttpResponse respond(HttpRequest request) {
+    HttpResponse res = new HttpResponse();
+    res.setHeader('Content-Type', 'application/json');
+    res.setBody('');
+    res.setStatusCode(this.statusCode);
+    return res;
+  }
 }
