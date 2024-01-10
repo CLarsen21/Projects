@@ -11,32 +11,16 @@ global class WebhookProject {
 			//get hash value from header
 			String hashedval = request.headers.get('X-Hub-Signature-256');
 			System.debug ('hashedval: '+hashedval);
-			Blob hmac = Crypto.generateMac('hmacSHA256', b8, Blob.valueOf('xxxxxxxxxxxxxxx'));
+            IssueWbhk__c mc = IssueWbhk__c.getOrgDefaults();
+			Blob hmac = Crypto.generateMac('hmacSHA256', b8, Blob.valueOf(mc.key__c));
 			String hmacstring = 'sha256='+EncodingUtil.convertToHex(hmac);
 			System.debug ('hmac: '+EncodingUtil.convertToHex(hmac));
 			if (hashedval == hmacstring){
                 System.debug('Secret value Matched and source can be trusted');
-                JSONParser parser = JSON.createParser(request.requestBody.toString());
-                string action, title, body;
-                while (parser.nextToken() != null) {
-                    if (parser.getCurrentToken() == JSONToken.FIELD_NAME) {
-                        switch on parser.getText() {
-                            when 'action' {
-                                parser.nextToken();
-                                action = parser.getText();
-                            }
-                            when 'title' {
-                                parser.nextToken();
-                                title = parser.getText();
-                            }
-                            when 'body' {
-                                parser.nextToken();
-                                body = parser.getText();
-                            }
-                        }
-                    }
-                    
-                }
+                WebhookParser wp = WebhookParser.parse(request.requestBody.toString());
+                string action = wp.action;
+                string title = wp.issue.title;
+                string body = wp.issue.body;
                 if(action.equals('opened')) {
                     case c = new case();
                     c.subject = title;
