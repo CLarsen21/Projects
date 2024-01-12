@@ -19,13 +19,13 @@ public class WebhookProjectTest {
         WebhookProject.HandlePost();
         test.stopTest();
         
-        Case c = [SELECT ID, Subject, CreatedDate FROM Case WHERE subject = :'Test Case' AND CreatedDate >= :cd];
+        Case c = [SELECT ID, Subject, CreatedDate FROM Case WHERE subject = :'Test Case' AND git_issue_id__c = :2070802854 AND CreatedDate >= :cd];
         System.assertEquals(c.subject, 'Test Case');
     }
     
     @isTest(SeeAllData=true)
     public static void handlePostTestClose() {
-        String testreq = getRequest('Closed');
+        String testreq = getRequest('closed');
         RestRequest req = new RestRequest();
         RestResponse res = new RestResponse();
         req.requestURI = '/api/Webhook/issuedemo/';
@@ -37,14 +37,14 @@ public class WebhookProjectTest {
         req.headers.put('X-Hub-Signature-256', hmacstring);
         RestContext.response = res;
         Datetime cd = datetime.now();
-        Case c1 = New Case(subject = 'Test Case', status = 'New', origin = 'Web');
+        Case c1 = New Case(subject = 'Test Case', status = 'New', origin = 'Web', git_issue_id__c = 2070802854);
         insert c1;
         
         test.startTest();
         WebhookProject.HandlePost();
         test.stopTest();
         
-        Case c2 = [SELECT ID, Subject, CreatedDate, Status FROM Case WHERE subject = :'Test Case' AND CreatedDate >= :cd AND status = :'Closed'];
+        Case c2 = [SELECT ID, Subject, CreatedDate, Status FROM Case WHERE subject = :'Test Case' AND CreatedDate >= :cd AND status = :'Closed' AND git_issue_id__c = :2070802854];
         System.assertEquals(c2.subject, 'Test Case');
         System.assertEquals(c2.status, 'Closed');
     }

@@ -21,17 +21,19 @@ global class WebhookProject {
                 string action = wp.action;
                 string title = wp.issue.title;
                 string body = wp.issue.body;
+                integer gid = wp.issue.id;
                 if(action.equals('opened')) {
                     case c = new case();
                     c.subject = title;
                     c.description = body;
                     c.status = 'New';
                     c.Origin = 'Web';
+                    c.git_issue_id__c = gid;
                     insert c;
                 }
-                else if(action == 'closed') {
-                    case c = [SELECT ID, status FROM case WHERE subject = :title limit 1];
-                    c.Status = 'Closed';
+                else if(action.equals('closed')) {
+                    case c = [SELECT ID, status, git_issue_id__c FROM case WHERE subject = :title AND git_issue_id__c = :gid limit 1];
+                    c.status = 'Closed';
                     update c;
                 }
             }
