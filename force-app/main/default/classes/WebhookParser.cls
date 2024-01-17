@@ -408,7 +408,7 @@ public class WebhookParser {
 						} else if (text == 'updated_at') {
 							updated_at = parser.getText();
 						} else if (text == 'closed_at') {
-							closed_at = parser.readValueAs(Object.class);
+							closed_at = parser.getText();
 						} else if (text == 'author_association') {
 							author_association = parser.getText();
 						} else if (text == 'active_lock_reason') {
@@ -422,7 +422,7 @@ public class WebhookParser {
 						} else if (text == 'performed_via_github_app') {
 							performed_via_github_app = parser.readValueAs(Object.class);
 						} else if (text == 'state_reason') {
-							state_reason = parser.readValueAs(Object.class);
+							state_reason = parser.getText();
 						} else {
 							System.debug(LoggingLevel.WARN, 'Issue consuming unrecognized property: '+text);
 							consumeObject(parser);
